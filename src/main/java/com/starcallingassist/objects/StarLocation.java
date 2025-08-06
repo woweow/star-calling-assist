@@ -4,6 +4,8 @@ import com.starcallingassist.enums.Region;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -230,5 +232,35 @@ public class StarLocation
 		}
 
 		return location.getRegion();
+	}
+
+	/**
+	 * Gets all predefined location names from the LOCATIONS map
+	 * @return Set of all location names
+	 */
+	public static Set<String> getAllLocationNames()
+	{
+		return LOCATIONS.values()
+			.stream()
+			.map(StarLocationDetails::getName)
+			.collect(Collectors.toSet());
+	}
+
+	/**
+	 * Converts a location display name to a config key name
+	 * @param locationName The display name of the location
+	 * @return The sanitized config key name
+	 */
+	public static String getLocationKeyName(String locationName)
+	{
+		if (locationName == null)
+		{
+			return null;
+		}
+
+		return locationName.toLowerCase()
+			.replaceAll("[^a-z0-9]", "_")
+			.replaceAll("_+", "_")
+			.replaceAll("^_|_$", "");
 	}
 }

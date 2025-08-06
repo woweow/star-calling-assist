@@ -126,6 +126,20 @@ public class SidePanel extends PluginPanel implements Activatable
 			}
 
 			@Override
+			public List<String> visibleLocations()
+			{
+				return StarLocation.getAllLocationNames().stream()
+					.filter(location -> Boolean.parseBoolean(configManager.getConfiguration("starcallingassistplugin", StarLocation.getLocationKeyName(location))))
+					.collect(Collectors.toList());
+			}
+
+			@Override
+			public boolean showUnknownLocations()
+			{
+				return config.showUnknownLocations();
+			}
+
+			@Override
 			public Boolean showWorldTypeColumn()
 			{
 				return config.showWorldType();

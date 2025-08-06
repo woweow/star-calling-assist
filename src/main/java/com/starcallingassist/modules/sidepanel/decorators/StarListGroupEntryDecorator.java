@@ -31,6 +31,10 @@ public interface StarListGroupEntryDecorator
 
 	List<Region> visibleRegions();
 
+	List<String> visibleLocations();
+
+	boolean showUnknownLocations();
+
 	Boolean showWorldTypeColumn();
 
 	Boolean showTierColumn();
