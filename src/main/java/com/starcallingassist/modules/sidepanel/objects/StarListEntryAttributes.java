@@ -5,6 +5,7 @@ import com.starcallingassist.enums.Region;
 import com.starcallingassist.modules.sidepanel.decorators.StarListGroupEntryDecorator;
 import com.starcallingassist.modules.sidepanel.enums.TotalLevelType;
 import com.starcallingassist.objects.Star;
+import com.starcallingassist.objects.StarLocation;
 import java.awt.Color;
 import java.util.EnumSet;
 import java.util.Objects;
@@ -158,7 +159,37 @@ public class StarListEntryAttributes
 			return false;
 		}
 
-		return decorator.visibleRegions().contains(star.getLocation().getRegion());
+		if (!decorator.visibleRegions().contains(star.getLocation().getRegion()))
+		{
+			return false;
+		}
+
+		// Check location-specific filtering
+		String locationName = star.getLocation().getName();
+		if (locationName != null)
+		{
+			// Check if this is a predefined location
+			boolean isKnownLocation = StarLocation.getAllLocationNames().contains(locationName);
+			
+			if (isKnownLocation)
+			{
+				// For known locations, check if it's in the visible list
+				if (!decorator.visibleLocations().contains(locationName))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				// For unknown locations (coordinates, typos, etc.), check the config setting
+				if (!decorator.showUnknownLocations())
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 
