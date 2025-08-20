@@ -158,7 +158,12 @@ public class StarListEntryAttributes
 			return false;
 		}
 
-		return decorator.visibleRegions().contains(star.getLocation().getRegion());
+		return !decorator.isLocationHidden(star.getLocation().getName());
+	}
+
+	public boolean isFavorite()
+	{
+		return decorator.isLocationFavorite(star.getLocation().getName());
 	}
 
 

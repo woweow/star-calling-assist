@@ -89,7 +89,10 @@ public class StarListPanel extends JPanel
 		{
 			rebuildNoStarsPanel();
 
-			List<StarListGroupEntryPanel> tableEntries = new ArrayList<>();
+			List<StarListGroupEntryPanel> allEntries = new ArrayList<>();
+			List<StarListGroupEntryPanel> favoriteEntries = new ArrayList<>();
+			List<StarListGroupEntryPanel> regularEntries = new ArrayList<>();
+
 			for (StarListEntryAttributes announcementAttribute : announcementAttributes.values())
 			{
 				if (!announcementAttribute.shouldBeVisible())
@@ -97,47 +100,39 @@ public class StarListPanel extends JPanel
 					continue;
 				}
 
-				tableEntries.add(new StarListGroupEntryPanel(announcementAttribute, decorator));
+				StarListGroupEntryPanel entry = new StarListGroupEntryPanel(announcementAttribute, decorator);
+				allEntries.add(entry);
+
+				if (announcementAttribute.isFavorite())
+				{
+					favoriteEntries.add(entry);
+				}
+				else
+				{
+					regularEntries.add(entry);
+				}
 			}
 
-			if (tableEntries.isEmpty() || !decorator.hasAuthorization())
+			if (allEntries.isEmpty() || !decorator.hasAuthorization())
 			{
 				cardLayout.show(starPanelContainer, EMPTY_PANEL);
 				return;
 			}
 
 			cardLayout.show(starPanelContainer, STAR_PANEL);
-			tableEntries.sort(this::sorter);
+			
+			// Sort both lists
+			favoriteEntries.sort(this::sorter);
+			regularEntries.sort(this::sorter);
 
 			starPanel.removeAll();
 			starPanel.add(Box.createVerticalStrut(4));
 
-			StarListGroupPanel group = null;
-			for (StarListGroupEntryPanel entry : tableEntries)
-			{
-				if (group != null && entry.getGroupingTitle().equals(group.getTitle()))
-				{
-					group.addEntry(entry);
-					continue;
-				}
+			// Add favorites section (always show, even if empty)
+			addFavoritesSection(favoriteEntries);
 
-				if (group != null)
-				{
-					group.commit();
-					starPanel.add(group);
-					starPanel.add(Box.createVerticalStrut(4));
-				}
-
-				group = new StarListGroupPanel(entry.getGroupingTitle(), orderByColumn, isSortAscending);
-				group.addEntry(entry);
-			}
-
-			if (group != null)
-			{
-				group.commit();
-				starPanel.add(group);
-				starPanel.add(Box.createVerticalStrut(4));
-			}
+			// Add regular location groups
+			addRegularLocationGroups(regularEntries);
 
 			revalidate();
 			repaint();
@@ -215,5 +210,51 @@ public class StarListPanel extends JPanel
 		}
 
 		return 0;
+	}
+
+	private void addFavoritesSection(List<StarListGroupEntryPanel> favoriteEntries)
+	{
+		// Always add favorites section header, even if empty
+		StarListGroupPanel favoritesGroup = new StarListGroupPanel("⭐ Favorites", orderByColumn, isSortAscending);
+		
+		// Add all favorite entries to the group
+		for (StarListGroupEntryPanel entry : favoriteEntries)
+		{
+			favoritesGroup.addEntry(entry);
+		}
+		
+		favoritesGroup.commit();
+		starPanel.add(favoritesGroup);
+		starPanel.add(Box.createVerticalStrut(4));
+	}
+
+	private void addRegularLocationGroups(List<StarListGroupEntryPanel> regularEntries)
+	{
+		StarListGroupPanel group = null;
+		for (StarListGroupEntryPanel entry : regularEntries)
+		{
+			if (group != null && entry.getGroupingTitle().equals(group.getTitle()))
+			{
+				group.addEntry(entry);
+				continue;
+			}
+
+			if (group != null)
+			{
+				group.commit();
+				starPanel.add(group);
+				starPanel.add(Box.createVerticalStrut(4));
+			}
+
+			group = new StarListGroupPanel(entry.getGroupingTitle(), orderByColumn, isSortAscending);
+			group.addEntry(entry);
+		}
+
+		if (group != null)
+		{
+			group.commit();
+			starPanel.add(group);
+			starPanel.add(Box.createVerticalStrut(4));
+		}
 	}
 }

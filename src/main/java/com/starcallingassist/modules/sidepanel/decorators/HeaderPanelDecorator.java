@@ -9,4 +9,6 @@ public interface HeaderPanelDecorator
 	OrderBy getOrderBy();
 
 	void onSortingChanged(OrderBy orderBy);
+
+	void onFilterToggleClicked();
 }

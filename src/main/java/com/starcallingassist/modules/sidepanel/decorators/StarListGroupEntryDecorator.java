@@ -1,6 +1,5 @@
 package com.starcallingassist.modules.sidepanel.decorators;
 
-import com.starcallingassist.enums.Region;
 import com.starcallingassist.events.ShowWorldPointOnWorldMapRequested;
 import com.starcallingassist.events.WorldHopRequest;
 import com.starcallingassist.modules.sidepanel.enums.TotalLevelType;
@@ -29,7 +28,9 @@ public interface StarListGroupEntryDecorator
 
 	int minDeadTime();
 
-	List<Region> visibleRegions();
+	boolean isLocationHidden(String locationName);
+
+	boolean isLocationFavorite(String locationName);
 
 	Boolean showWorldTypeColumn();
 
